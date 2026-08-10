@@ -1,0 +1,18 @@
+# Claude Code / AI-workflow scaffolding (personal working notes, not project files)
+CLAUDE.md
+PROGRESS.md
+Project.md
+.claude/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+.venv/
+
+# Large artifacts: raw attention dumps, model weights, caches
+data/raw/
+results/**/*.npz
+results/**/*.pt
+*.log
