@@ -1,0 +1,348 @@
+[
+  {
+    "condition": "baseline",
+    "n_masked": 0,
+    "recall": 0.975,
+    "heads": []
+  },
+  {
+    "condition": "top-1 retrieval heads",
+    "n_masked": 1,
+    "recall": 0.975,
+    "heads": [
+      [
+        15,
+        30
+      ]
+    ]
+  },
+  {
+    "condition": "top-5 retrieval heads",
+    "n_masked": 5,
+    "recall": 0.6875,
+    "heads": [
+      [
+        15,
+        30
+      ],
+      [
+        8,
+        1
+      ],
+      [
+        16,
+        1
+      ],
+      [
+        24,
+        27
+      ],
+      [
+        16,
+        20
+      ]
+    ]
+  },
+  {
+    "condition": "top-10 retrieval heads",
+    "n_masked": 10,
+    "recall": 0.625,
+    "heads": [
+      [
+        15,
+        30
+      ],
+      [
+        8,
+        1
+      ],
+      [
+        16,
+        1
+      ],
+      [
+        24,
+        27
+      ],
+      [
+        16,
+        20
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        10,
+        14
+      ],
+      [
+        20,
+        14
+      ],
+      [
+        2,
+        22
+      ],
+      [
+        27,
+        7
+      ]
+    ]
+  },
+  {
+    "condition": "random-1 heads (seed 0)",
+    "n_masked": 1,
+    "recall": 0.975,
+    "heads": [
+      [
+        27,
+        24
+      ]
+    ]
+  },
+  {
+    "condition": "random-1 heads (seed 1)",
+    "n_masked": 1,
+    "recall": 0.975,
+    "heads": [
+      [
+        4,
+        11
+      ]
+    ]
+  },
+  {
+    "condition": "random-1 heads (seed 2)",
+    "n_masked": 1,
+    "recall": 0.975,
+    "heads": [
+      [
+        31,
+        11
+      ]
+    ]
+  },
+  {
+    "condition": "random-5 heads (seed 0)",
+    "n_masked": 5,
+    "recall": 0.975,
+    "heads": [
+      [
+        27,
+        24
+      ],
+      [
+        12,
+        18
+      ],
+      [
+        24,
+        26
+      ],
+      [
+        29,
+        7
+      ],
+      [
+        13,
+        22
+      ]
+    ]
+  },
+  {
+    "condition": "random-5 heads (seed 1)",
+    "n_masked": 5,
+    "recall": 0.975,
+    "heads": [
+      [
+        4,
+        11
+      ],
+      [
+        18,
+        19
+      ],
+      [
+        27,
+        27
+      ],
+      [
+        26,
+        8
+      ],
+      [
+        25,
+        1
+      ]
+    ]
+  },
+  {
+    "condition": "random-5 heads (seed 2)",
+    "n_masked": 5,
+    "recall": 0.975,
+    "heads": [
+      [
+        31,
+        11
+      ],
+      [
+        28,
+        11
+      ],
+      [
+        31,
+        3
+      ],
+      [
+        27,
+        29
+      ],
+      [
+        1,
+        25
+      ]
+    ]
+  },
+  {
+    "condition": "random-10 heads (seed 0)",
+    "n_masked": 10,
+    "recall": 0.95,
+    "heads": [
+      [
+        27,
+        24
+      ],
+      [
+        12,
+        18
+      ],
+      [
+        24,
+        26
+      ],
+      [
+        29,
+        7
+      ],
+      [
+        13,
+        22
+      ],
+      [
+        1,
+        9
+      ],
+      [
+        8,
+        16
+      ],
+      [
+        31,
+        21
+      ],
+      [
+        16,
+        24
+      ],
+      [
+        15,
+        26
+      ]
+    ]
+  },
+  {
+    "condition": "random-10 heads (seed 1)",
+    "n_masked": 10,
+    "recall": 0.975,
+    "heads": [
+      [
+        4,
+        11
+      ],
+      [
+        18,
+        19
+      ],
+      [
+        27,
+        27
+      ],
+      [
+        26,
+        8
+      ],
+      [
+        25,
+        1
+      ],
+      [
+        2,
+        0
+      ],
+      [
+        8,
+        12
+      ],
+      [
+        3,
+        26
+      ],
+      [
+        16,
+        6
+      ],
+      [
+        24,
+        30
+      ]
+    ]
+  },
+  {
+    "condition": "random-10 heads (seed 2)",
+    "n_masked": 10,
+    "recall": 0.9625,
+    "heads": [
+      [
+        31,
+        11
+      ],
+      [
+        28,
+        11
+      ],
+      [
+        31,
+        3
+      ],
+      [
+        27,
+        29
+      ],
+      [
+        1,
+        25
+      ],
+      [
+        2,
+        31
+      ],
+      [
+        2,
+        24
+      ],
+      [
+        11,
+        25
+      ],
+      [
+        27,
+        15
+      ],
+      [
+        5,
+        19
+      ]
+    ]
+  }
+]

@@ -68,6 +68,39 @@ the artifact disguised itself.
 154 s on one H200. Recomputing over only the 237 answered instances leaves the
 top-20 unchanged (overlap 20/20), so the list is not an artifact of failures.
 
+### Verifying the head list
+
+Wu et al. publish head scores for llama-2-7b-80k, llama-2-13b-64k,
+Mistral-7B-v0.2, Mixtral-8x7B, Qwen1.5-14B(-Chat) and Yi-6B-200K — but **not for
+any Llama-3.x model**, so there is no published list to reproduce here. Against
+llama-2-7b-80k the *shape* matches (2.1% vs 3.2% of heads above 0.1) while the
+positions do not (top-20 overlap 1/20, Spearman +0.015) — expected, since
+retrieval heads are model-specific.
+
+So the list is verified **causally** instead, the same evidence the original
+paper uses. Heads are zeroed at the input to `o_proj`, and random heads of
+matched count are masked as a control:
+
+| heads masked | identified | random (3 seeds) | gap |
+|---|---|---|---|
+| 1 | 0.975 | 0.975 | +0.000 |
+| 5 | 0.688 | 0.975 | **+0.287** |
+| 10 | 0.625 | 0.962 | **+0.337** |
+
+Masking 5 identified heads costs 29 points of needle recall; masking 5 random
+heads costs nothing.
+
+**`L15H30` alone is dispensable.** The top head by a factor of two changes recall
+by 0.000 when masked on its own — the capability is redundant across the top few.
+The compression mechanism therefore keys on the top-k set (k ≥ 5), not a single
+head.
+
+```bash
+python -m heads.run_ablation --heads results/head_id/<tag>_retrieval_heads.json
+python -m heads.test_masking     # the mask mechanism itself
+python -m heads.compare_published --scores results/head_id/<tag>_head_scores.json
+```
+
 ### Why the score is computed at decode time only
 
 `output_attentions` was removed in transformers 5.x, and attention weights are
