@@ -1,6 +1,7 @@
 # Claude Code / AI-workflow scaffolding (personal working notes, not project files)
 CLAUDE.md
 PROGRESS.md
+CHECKPOINTS.md
 Project.md
 .claude/
 
@@ -16,3 +17,4 @@ data/raw/
 results/**/*.npz
 results/**/*.pt
 *.log
+*.pid

@@ -1,0 +1,141 @@
+{
+  "model": "NousResearch/Meta-Llama-3.1-8B-Instruct",
+  "n": 25,
+  "summary": [
+    {
+      "context_length": 4000,
+      "condition": "dense@1024",
+      "n": 25,
+      "prompt_tokens": 1067.3,
+      "latency_ms_mean": 123.0,
+      "latency_ms_p50": 85.7,
+      "speedup_vs_naive": 1.91
+    },
+    {
+      "context_length": 4000,
+      "condition": "dense@2048",
+      "n": 25,
+      "prompt_tokens": 2050.6,
+      "latency_ms_mean": 183.3,
+      "latency_ms_p50": 148.3,
+      "speedup_vs_naive": 1.28
+    },
+    {
+      "context_length": 4000,
+      "condition": "dense@256",
+      "n": 25,
+      "prompt_tokens": 327.8,
+      "latency_ms_mean": 107.5,
+      "latency_ms_p50": 70.2,
+      "speedup_vs_naive": 2.19
+    },
+    {
+      "context_length": 4000,
+      "condition": "dense@512",
+      "n": 25,
+      "prompt_tokens": 575.4,
+      "latency_ms_mean": 119.9,
+      "latency_ms_p50": 91.8,
+      "speedup_vs_naive": 1.96
+    },
+    {
+      "context_length": 4000,
+      "condition": "naive_long_context",
+      "n": 25,
+      "prompt_tokens": 3928.0,
+      "latency_ms_mean": 235.3,
+      "latency_ms_p50": 206.2,
+      "speedup_vs_naive": 1.0
+    },
+    {
+      "context_length": 16000,
+      "condition": "dense@1024",
+      "n": 25,
+      "prompt_tokens": 1067.0,
+      "latency_ms_mean": 131.7,
+      "latency_ms_p50": 100.5,
+      "speedup_vs_naive": 4.89
+    },
+    {
+      "context_length": 16000,
+      "condition": "dense@2048",
+      "n": 25,
+      "prompt_tokens": 2049.7,
+      "latency_ms_mean": 132.1,
+      "latency_ms_p50": 111.5,
+      "speedup_vs_naive": 4.88
+    },
+    {
+      "context_length": 16000,
+      "condition": "dense@256",
+      "n": 25,
+      "prompt_tokens": 329.2,
+      "latency_ms_mean": 110.3,
+      "latency_ms_p50": 82.0,
+      "speedup_vs_naive": 5.84
+    },
+    {
+      "context_length": 16000,
+      "condition": "dense@512",
+      "n": 25,
+      "prompt_tokens": 575.7,
+      "latency_ms_mean": 116.6,
+      "latency_ms_p50": 90.5,
+      "speedup_vs_naive": 5.53
+    },
+    {
+      "context_length": 16000,
+      "condition": "naive_long_context",
+      "n": 25,
+      "prompt_tokens": 15462.3,
+      "latency_ms_mean": 644.5,
+      "latency_ms_p50": 620.1,
+      "speedup_vs_naive": 1.0
+    },
+    {
+      "context_length": 32000,
+      "condition": "dense@1024",
+      "n": 25,
+      "prompt_tokens": 1067.8,
+      "latency_ms_mean": 133.6,
+      "latency_ms_p50": 85.7,
+      "speedup_vs_naive": 10.34
+    },
+    {
+      "context_length": 32000,
+      "condition": "dense@2048",
+      "n": 25,
+      "prompt_tokens": 2049.3,
+      "latency_ms_mean": 155.0,
+      "latency_ms_p50": 121.6,
+      "speedup_vs_naive": 8.91
+    },
+    {
+      "context_length": 32000,
+      "condition": "dense@256",
+      "n": 25,
+      "prompt_tokens": 329.9,
+      "latency_ms_mean": 92.3,
+      "latency_ms_p50": 68.1,
+      "speedup_vs_naive": 14.97
+    },
+    {
+      "context_length": 32000,
+      "condition": "dense@512",
+      "n": 25,
+      "prompt_tokens": 575.1,
+      "latency_ms_mean": 92.6,
+      "latency_ms_p50": 74.1,
+      "speedup_vs_naive": 14.92
+    },
+    {
+      "context_length": 32000,
+      "condition": "naive_long_context",
+      "n": 25,
+      "prompt_tokens": 30833.6,
+      "latency_ms_mean": 1381.4,
+      "latency_ms_p50": 1366.8,
+      "speedup_vs_naive": 1.0
+    }
+  ]
+}

@@ -117,15 +117,149 @@ steps, capturing weights with a forward hook. The final prompt token is fed
 inside the decode loop rather than the prefill, so even the attention producing
 the *first* generated token is captured at `q_len=1`.
 
+## Stage 2 — The benchmark and the baselines
+
+### Why HotpotQA is padded rather than used as-is
+
+HotpotQA's distractor setting gives 10 paragraphs — **mean 1,312 Llama tokens,
+median 1,283**. Llama-3.1 has a 128k window, so at that length nothing is lost in
+the middle, there is nothing to compress, and every method ties. Measuring
+long-context compression on it would be measuring nothing.
+
+So each question keeps its 2 gold paragraphs and its 8 hard TF-IDF distractors,
+and is padded with paragraphs pooled from *other* questions up to a target
+length (4k / 16k / 32k). That buys a context-length knob, exact sentence-level
+gold labels, and controllable gold *depth* for the lost-in-the-middle probe.
+
+Pooled paragraphs are excluded by title whenever the title appears anywhere in
+the source question's own 10, which prevents re-inserting gold content at an
+unlabelled position. The pool is drawn from the **train** split so padding never
+pulls another evaluation question's gold paragraph in. The honest caveat: a
+pooled paragraph under a different title could still mention the answer. That
+risk is inherent to any distractor pool (fullwiki included) and is not corrected
+for.
+
+### The unit of retrieval is the sentence
+
+HotpotQA annotates supporting facts per sentence, so making the sentence the
+retrieval unit lets Recall be scored directly against the annotation with no
+span mapping in between. Sentences are scored title-prefixed (`"<title>:
+<sentence>"`) because a bare HotpotQA sentence often drops its subject ("He was
+born in…"), which no retriever can recover.
+
+### Matched budget
+
+Budget is **tokens of retrieved context handed to the generator**, excluding the
+question and prompt scaffolding. Every method spends it through the same greedy
+packer, so a difference in results is a difference in the retrieval signal and
+not in how greedily one implementation packed its context. Measured on the
+rendered string, the budget binds tightly and is never exceeded (e.g. 1024 →
+973 tokens).
+
+### Methods compared
+
+| | signal |
+|---|---|
+| naive long-context | none — the whole padded context |
+| truncation | document order until the budget runs out |
+| BM25 | lexical |
+| dense (bge-m3) | embedding similarity |
+| hybrid | reciprocal-rank fusion of the two |
+| oracle | gold sentences first — a ceiling, not a baseline |
+
+BM25 is reported alongside bge-m3 deliberately: multi-hop questions are
+entity-heavy, which is exactly where a lexical retriever stays competitive, and
+a headline result that only beats a weak retriever is not worth much. The oracle
+says how much of the remaining error is retrieval failure versus the generator
+failing on a context that already contains the answer.
+
+Exact search is used rather than a FAISS index — each instance has its own
+haystack of a few hundred to a few thousand sentences, so one matmul is both
+exact and faster than building a per-instance ANN index. An index only earns its
+cost against a single large shared corpus, which is not this setting.
+
+```bash
+python -m data.test_hotpot        # 18 construction checks, offline, seconds
+python -m baselines.run_baselines --n 300 --context-lengths 4000 16000 32000 \
+    --budgets 256 512 1024 2048
+python -m baselines.run_latency   # unbatched latency vs naive long-context
+python -m eval.plot --summary results/baselines/<tag>_baselines_summary.json
+```
+
+### Results — 300 questions, 3 context lengths, 4 budgets
+
+![Answer F1 at matched context budgets](results/baselines/accuracy_vs_compression.png)
+
+**Retrieval beats stuffing the window, and the gap widens with length.** At a
+256-token budget — 1/128th of a 32k context — dense retrieval scores higher than
+feeding the model everything:
+
+| context | naive long-context F1 | dense @256 F1 | Δ | compression |
+|---|---|---|---|---|
+| 4,000 | 0.576 | 0.610 | +0.034 | 93.8% |
+| 16,000 | 0.500 | 0.603 | +0.103 | 98.4% |
+| 32,000 | 0.480 | 0.605 | +0.125 | 99.2% |
+
+Naive long-context decays as the context grows (0.576 → 0.500 → 0.480) while
+dense retrieval is essentially flat (0.610 → 0.603 → 0.605). The decay *is*
+lost-in-the-middle: the gold sentences are always present in the naive
+condition, so nothing was lost to retrieval — only to the model's ability to use
+a long context.
+
+**More context hurts even when the evidence is guaranteed present.** The oracle
+condition always contains every gold sentence, and its F1 still *falls* as the
+budget grows — 0.753 → 0.729 → 0.680 → 0.630 at 4k across 256 → 2048 tokens. The
+only thing changing is how much non-gold text sits alongside the answer. This is
+the cleanest evidence in the run that compression is worth doing at all, and it
+is why every method peaks at 256–1024 rather than at the largest budget.
+
+**The headroom that justifies the rest of the project.** Dense retrieval reaches
+0.605 F1 at 32k/256; the oracle reaches 0.747 at the same budget. That **~0.14 F1
+gap is not a generation limit — it is a retrieval-signal limit**, and it is
+exactly the gap the retrieval-head method has to attack. The bar for Stage 3 is
+therefore dense retrieval, not naive long-context.
+
+BM25 is a real baseline rather than a strawman (0.555 F1 at 4k/256, within 0.055
+of dense) but loses at every budget and length. Hybrid RRF lands between the two
+and never beats dense alone — fusing a weaker lexical signal into a stronger
+dense one costs more than it adds here. Truncation collapses with length (0.179
+→ 0.100 → 0.059 at a 256-token budget), confirming the padded haystack really
+does bury the evidence rather than leaving it near the front.
+
+### Latency
+
+Unbatched, one request at a time, 10 warm-up calls discarded, 25 questions per
+length. Jobs are shuffled across conditions — grouped by length, whichever block
+ran first absorbed the residual warm-up and read 196 ms against 77 ms elsewhere
+for an identically sized prompt.
+
+| context | naive | dense @256 | speedup |
+|---|---|---|---|
+| 4,000 | 235 ms | 108 ms | 2.2× |
+| 16,000 | 644 ms | 110 ms | 5.8× |
+| 32,000 | 1,381 ms | 92 ms | **15.0×** |
+
+So at 32k the retrieval baseline is simultaneously **more accurate (+0.125 F1)
+and 15× faster** than reading the whole context.
+
 ## Layout
 
 ```
+data/        pooled-distractor HotpotQA construction, budget packing
 heads/       retrieval-head identification (needles, haystack, capture, scoring)
-baselines/   dense-retrieval RAG, naive long-context
+baselines/   dense-retrieval RAG, BM25, naive long-context
 compress/    retrieval-head-guided context compression
-eval/        Recall@k, QA accuracy/F1
+eval/        Recall@k, QA accuracy/F1, figures
 results/
 ```
+
+## A note on model loading on this box
+
+The HF cache lives on NFS, and transformers materializes checkpoint tensors
+through an mmap. Sequential reads off that mount run at ~80 MB/s but mmap
+page-faults do not: **bge-m3 did not finish loading in 280 s from the cache, and
+loads in 30 s from local disk.** `paths.resolve_model` therefore prefers a local
+mirror under `/data/jayavardhan/lcrag_models/` and falls back to the HF id.
 
 ## Setup
 
