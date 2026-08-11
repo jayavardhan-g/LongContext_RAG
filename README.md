@@ -267,14 +267,32 @@ mirror under `/data/jayavardhan/lcrag_models/` and falls back to the HF id.
 conda create -p /mnt/warm_storage/jayavardhan/tools/conda-envs/lcrag python=3.11
 /mnt/warm_storage/jayavardhan/tools/conda-envs/lcrag/bin/pip install \
     torch transformers accelerate datasets sentencepiece protobuf \
-    numpy pandas matplotlib tqdm huggingface_hub hf_transfer
+    numpy pandas matplotlib tqdm huggingface_hub hf_transfer rank_bm25
 ```
 
-Run head identification:
+Neither `sentence-transformers` nor `faiss` is required — see the baseline
+notes above for why.
+
+Mirror the checkpoints to local disk (see the loading note above; on NFS this
+is the difference between 30 s and not finishing):
 
 ```bash
+cp -rL <hf_cache>/models--BAAI--bge-m3/snapshots/<rev>/. \
+    /data/jayavardhan/lcrag_models/bge-m3/
+cp -rL <hf_cache>/models--NousResearch--Meta-Llama-3.1-8B-Instruct/snapshots/<rev>/. \
+    /data/jayavardhan/lcrag_models/Meta-Llama-3.1-8B-Instruct/
+```
+
+Then run the pipeline (everything is offline; keep the flags set):
+
+```bash
+export HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1
+python -m data.test_hotpot                                          # 18 checks
 python -m heads.run_head_id --context-lengths 2000 4000 8000 --n-depths 10
+python -m baselines.run_baselines --n 300 --context-lengths 4000 16000 32000 \
+    --budgets 256 512 1024 2048
 ```
 
 Model: `NousResearch/Meta-Llama-3.1-8B-Instruct` (an ungated mirror of
 `meta-llama/Llama-3.1-8B-Instruct`; identical weights, no access request needed).
+Encoder: `BAAI/bge-m3`. Data: HotpotQA distractor, validation split.
