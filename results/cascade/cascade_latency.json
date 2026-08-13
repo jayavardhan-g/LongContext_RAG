@@ -1,0 +1,51 @@
+{
+  "stats": {
+    "dense_encode": {
+      "mean": 396.7,
+      "p50": 347.9,
+      "n": 40
+    },
+    "head_S1024": {
+      "mean": 105.0,
+      "p50": 119.4,
+      "n": 23
+    },
+    "head_S2048": {
+      "mean": 126.3,
+      "p50": 104.3,
+      "n": 22
+    },
+    "head_S4096": {
+      "mean": 210.9,
+      "p50": 218.7,
+      "n": 22
+    },
+    "head_fullctx": {
+      "mean": 1497.1,
+      "p50": 1500.5,
+      "n": 23
+    }
+  },
+  "totals": {
+    "naive_long_context": {
+      "per_query": 1381.0,
+      "pre_indexed": 1381.0
+    },
+    "dense@256": {
+      "per_query": 488.7,
+      "pre_indexed": 92.0
+    },
+    "cascade@256 (head_S1024)": {
+      "per_query": 593.7,
+      "pre_indexed": 197.0
+    },
+    "fusion_fullctx@256": {
+      "per_query": 1985.8,
+      "pre_indexed": 1589.1
+    }
+  },
+  "gen_ms": {
+    "b256": 92.0,
+    "naive": 1381.0
+  }
+}
